@@ -1,0 +1,91 @@
+name: Deploy
+
+# 合成データの生成 → 取り込み → 画面のビルド → 公開ファイルの検査 → Cloudflare Pages へのデプロイ
+# (基本設計 F-08、移行・リリース計画「公開の手順」)。
+# PR ではデプロイせず、ビルドと検査までを確かめる。
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/deploy.yml
+      - scripts/check-public-files.sh
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# デプロイが重ならないようにする。走っているデプロイは止めずに、次を待たせる
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  PAGES_PROJECT: event-timeline-poc
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # prepare(lefthook install)は CI では不要なので無効化する
+      - run: npm ci --ignore-scripts
+
+      # シードが固定なので、毎回同じデータになる
+      - run: npm run generate -- --all
+      - run: npm run ingest -- --all
+      - run: npm run build
+
+      - name: 公開ファイルの検査
+        run: scripts/check-public-files.sh packages/web/dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: packages/web/dist
+          retention-days: 7
+          if-no-files-found: error
+
+  # Cloudflare のシークレットはこのジョブだけが読む。環境 production は main からしか使えない
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://event-timeline-poc.pages.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # wrangler は package.json で版を固定している
+      - run: npm ci --ignore-scripts
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: site
+          path: site
+
+      - name: Cloudflare Pages にデプロイ
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: >-
+          npx --no -- wrangler pages deploy site
+          --project-name="$PAGES_PROJECT"
+          --branch=main
+          --commit-hash="$GITHUB_SHA"
+          --commit-message="$(git log -1 --format=%s)"
+          --commit-dirty=true
