@@ -1,0 +1,97 @@
+# 障害: デプロイで DB 接続プールの上限を誤って下げた
+name: s1-config-deploy
+kind: incident
+seed: 101
+start: "2026-10-01T00:00:00+09:00"
+noise: { events: 9500 }
+title:
+  ja: デプロイ後に注文が失敗し始めた
+  en: Orders started failing after a deploy
+summary:
+  ja: 架空のネットショップ「Fictive Mart」で、午前10時すぎから注文の失敗が急に増え、エラー率のアラートが鳴りました。
+  en: At the fictional online shop "Fictive Mart", order failures spiked shortly after 10 a.m. and an error-rate alert fired.
+howToStart:
+  ja: 重要度を error 以上に絞り、最初の失敗の少し前に何が起きたかを、全情報源で見てみよう。
+  en: Filter to error and above, then look at what happened across all sources just before the first failure.
+rootCause:
+  ja: 10:00 の checkout-api v2.14.0 のデプロイで、DB 接続プールの上限が 50 から 5 に誤って下げられた。接続待ちのタイムアウトで注文が失敗し、エラー率のアラートにつながった。ロールバックで回復した。
+  en: The 10:00 deploy of checkout-api v2.14.0 mistakenly lowered the DB connection pool limit from 50 to 5. Requests timed out waiting for a connection, orders failed, and the error-rate alert fired. A rollback restored service.
+story:
+  # 無関係な警告(調査の寄り道になる)
+  - at: "09:40:00"
+    source: infra
+    type: alert
+    severity: warn
+    message: "Alert: disk usage 81% on worker-01 (threshold 80%)"
+    fields: { host: worker-01, service: mail-worker }
+  - at: "10:00:00"
+    source: infra
+    type: deploy
+    severity: info
+    message: Deployment of checkout-api v2.14.0 started
+    fields: { host: web-01, service: checkout-api }
+    answer: true
+  - at: "10:00:45"
+    source: app
+    type: config_loaded
+    severity: info
+    message: "Config loaded: db.pool.max_connections=5 (previous 50)"
+    fields: { service: checkout-api }
+    answer: true
+  - at: "10:01:00"
+    source: infra
+    type: deploy
+    severity: info
+    message: Deployment of checkout-api v2.14.0 completed
+    fields: { host: web-01, service: checkout-api }
+  - at: "10:03:10"
+    source: app
+    type: db_pool_timeout
+    severity: error
+    message: Timed out after 3000ms waiting for a DB connection from the pool (active=5)
+    ids: { trace: "{trace}", user: "{user}" }
+    fields: { service: checkout-api }
+    count: 220
+    over: "01:08:00"
+    answer: true
+    # タイムアウトした利用者の注文が失敗する(同じユーザー ID でつながる)
+    then:
+      - after: "00:00:01"
+        source: business
+        type: order_failed
+        severity: error
+        message: "Order failed: checkout service returned an internal error"
+        ids: { order: "{order}", user: "{user}" }
+        chance: 0.65
+        answer: true
+  - at: "10:08:00"
+    source: infra
+    type: alert
+    severity: error
+    message: "Alert: checkout-api 5xx error rate 12.4% (threshold 2%)"
+    fields: { host: web-01, service: checkout-api }
+    answer: true
+  - at: "10:20:00"
+    source: infra
+    type: alert
+    severity: critical
+    message: "Alert: checkout-api 5xx error rate 31.0% (threshold 2%)"
+    fields: { host: web-01, service: checkout-api }
+  - at: "11:10:00"
+    source: infra
+    type: deploy
+    severity: info
+    message: Rollback of checkout-api to v2.13.2 completed
+    fields: { host: web-01, service: checkout-api }
+  - at: "11:10:30"
+    source: app
+    type: config_loaded
+    severity: info
+    message: "Config loaded: db.pool.max_connections=50 (previous 5)"
+    fields: { service: checkout-api }
+  - at: "11:14:00"
+    source: infra
+    type: alert_resolved
+    severity: info
+    message: "Resolved: checkout-api 5xx error rate 0.3%"
+    fields: { host: web-01, service: checkout-api }
