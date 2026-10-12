@@ -64,5 +64,10 @@
   "answer.hide": "Hide the answer",
   "answer.rootCause": "Root cause",
   "answer.sequence": "From cause to impact (click to jump to the event)",
-  "filter.toggle": "Filters"
+  "filter.toggle": "Filters",
+  "feedback.title": "Feedback",
+  "feedback.lead": "Tell us what you think on GitHub Discussions (a GitHub account is required).",
+  "feedback.general": "Share feedback",
+  "feedback.ideas": "Suggest an improvement",
+  "feedback.polls": "Vote: would you use this in production?"
 }
