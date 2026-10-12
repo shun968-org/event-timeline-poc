@@ -14,5 +14,17 @@
   "status.loading": "読み込み中…",
   "error.load": "データを読み込めませんでした。時間をおいて開き直してください。",
   "error.datasetNotFound": "データセット「{name}」が見つかりません。",
-  "error.backToTop": "シナリオの一覧に戻る"
+  "error.backToTop": "シナリオの一覧に戻る",
+  "timeline.count": "{shown} / {total} 件",
+  "timeline.noEvents": "条件に合うイベントはありません。",
+  "timeline.listLabel": "イベントの一覧(発生順)",
+  "histogram.label": "時間帯ごとのイベント件数(情報源ごとに色分け)",
+  "histogram.hint": "グラフをドラッグすると、その期間に絞り込めます。",
+  "filter.sources": "情報源",
+  "filter.severities": "重要度",
+  "filter.types": "種別",
+  "filter.timeZone": "時刻の表示",
+  "filter.period": "期間: {from} 〜 {to}({tz})",
+  "filter.clearPeriod": "期間を解除",
+  "filter.clearAll": "絞り込みをすべて解除"
 }

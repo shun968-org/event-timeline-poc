@@ -6,9 +6,9 @@ import { Header } from './components/Header';
 import { TopPage } from './components/TopPage';
 import { useDataSource } from './data/context';
 import { LangContext, resolveLang, useT } from './i18n';
-import { useViewState } from './navigation';
+import { useViewState, type NavigateOptions } from './navigation';
 import { loadSetting, saveSetting } from './storage';
-import { EMPTY_VIEW_STATE } from './view-state';
+import { EMPTY_VIEW_STATE, type ViewState } from './view-state';
 
 const LANG_KEY = 'event-timeline:lang';
 
@@ -35,7 +35,7 @@ export function App() {
       <ErrorBoundary key={state.dataset ?? ''} fallback={(error) => <LoadError error={error} />}>
         <Suspense fallback={<Loading />}>
           {state.dataset ? (
-            <DatasetLoader name={state.dataset} />
+            <DatasetLoader name={state.dataset} state={state} onChange={navigate} />
           ) : (
             <IndexLoader onSelect={(dataset) => navigate({ ...EMPTY_VIEW_STATE, dataset, lang })} />
           )}
@@ -50,7 +50,12 @@ function IndexLoader({ onSelect }: { onSelect: (dataset: string) => void }) {
   return <TopPage index={index} onSelect={onSelect} />;
 }
 
-function DatasetLoader({ name }: { name: string }) {
+interface DatasetProps {
+  state: ViewState;
+  onChange: (next: ViewState, options?: NavigateOptions) => void;
+}
+
+function DatasetLoader({ name, ...props }: DatasetProps & { name: string }) {
   const { t } = useT();
   const source = useDataSource();
   const index = use(source.loadIndex());
@@ -63,12 +68,12 @@ function DatasetLoader({ name }: { name: string }) {
       </main>
     );
   }
-  return <DatasetContent summary={summary} />;
+  return <DatasetContent summary={summary} {...props} />;
 }
 
-function DatasetContent({ summary }: { summary: DatasetSummary }) {
+function DatasetContent({ summary, ...props }: DatasetProps & { summary: DatasetSummary }) {
   const dataset = use(useDataSource().loadDataset(summary.name));
-  return <DatasetPage summary={summary} dataset={dataset} />;
+  return <DatasetPage summary={summary} dataset={dataset} {...props} />;
 }
 
 function Loading() {
