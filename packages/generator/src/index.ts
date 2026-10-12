@@ -1,2 +1,2 @@
-// シナリオ定義から合成データを生成する(マイルストーン「2. データ」)
-export {};
+export { generate, type GeneratedDataset } from './generate';
+export { scenarioDefinitionSchema, type ScenarioDefinition } from './scenario';

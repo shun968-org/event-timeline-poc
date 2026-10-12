@@ -11,6 +11,8 @@
   各パッケージは `src/index.ts` をそのまま公開し、ビルドせずに参照する(Vite・tsx・Vitest が TypeScript を直接読む)
 - `npm run dev`(画面)/ `npm run typecheck` / `npm run lint` / `npm run format:check` / `npm test` / `npm run build`。
   CI の `repo-checks` が同じものを実行する
+- 合成データ: `npm run generate -- <シナリオ名> | --all`。`scenarios/*.yaml` から `datasets/<シナリオ名>/`(git 管理外)を作る。
+  イベント ID は `<ファイル名>:<行番号>`(`eventId`)で、正解の順序もこの ID で持つ
 - 画面の文言は `packages/web/src/i18n/ja.json`・`en.json` に同じキーで足す(片方だけだとテストが失敗する)
 
 ## 開発規約

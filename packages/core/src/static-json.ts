@@ -12,7 +12,7 @@ export type SourceInfo = z.infer<typeof sourceInfoSchema>;
 
 /** 共通イベント形式。取り込み CLI が書き出し、画面が読む */
 export const timelineEventSchema = z.object({
-  /** データセット内で一意 */
+  /** データセット内で一意(`eventId` で作る) */
   id: z.string().min(1),
   /** 発生時刻(正規化済み) */
   t: utcDateTimeSchema,
