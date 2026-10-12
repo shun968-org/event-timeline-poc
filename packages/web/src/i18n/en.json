@@ -52,5 +52,16 @@
   "detail.filterById": "Filter by this ID",
   "detail.raw": "Original data",
   "detail.file": "File and line",
-  "detail.originalTime": "Original time"
+  "detail.originalTime": "Original time",
+  "guide.howToStart": "How to start",
+  "guide.close": "Close",
+  "hints.title": "Tips",
+  "hints.selectEvent": "Select an event to see its original data and related IDs.",
+  "hints.filterById": "Use \"Filter by this ID\" in the details to line up only the events for the same order, user, or trace across all sources.",
+  "hints.dragHistogram": "Drag across the chart above to focus on that time range.",
+  "hints.dismiss": "Got it",
+  "answer.show": "Show the answer",
+  "answer.hide": "Hide the answer",
+  "answer.rootCause": "Root cause",
+  "answer.sequence": "From cause to impact (click to jump to the event)"
 }

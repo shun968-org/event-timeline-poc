@@ -52,5 +52,16 @@
   "detail.filterById": "この ID で絞り込む",
   "detail.raw": "元データ",
   "detail.file": "ファイルと行",
-  "detail.originalTime": "元の時刻"
+  "detail.originalTime": "元の時刻",
+  "guide.howToStart": "調査の始め方",
+  "guide.close": "閉じる",
+  "hints.title": "使い方のヒント",
+  "hints.selectEvent": "イベントを選ぶと、元データと関連 ID を確認できます。",
+  "hints.filterById": "詳細の「この ID で絞り込む」で、同じ注文・ユーザー・トレースのイベントだけを全情報源から並べられます。",
+  "hints.dragHistogram": "上のグラフをドラッグすると、その時間帯に絞り込めます。",
+  "hints.dismiss": "わかった",
+  "answer.show": "答えを見る",
+  "answer.hide": "答えを閉じる",
+  "answer.rootCause": "根本原因",
+  "answer.sequence": "原因から影響までの順序(押すとそのイベントに移ります)"
 }
