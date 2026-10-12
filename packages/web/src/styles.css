@@ -200,11 +200,18 @@ button {
 
 .dataset {
   display: flex;
-  flex-direction: column;
   flex: 1;
   min-height: 0;
-  gap: 8px;
+  gap: 12px;
   padding: 8px 16px 0;
+}
+
+.dataset-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  gap: 8px;
 }
 
 .dataset-head {
@@ -466,4 +473,151 @@ button {
 .severity-critical {
   color: var(--error-text);
   font-weight: 700;
+}
+
+.event-row {
+  cursor: pointer;
+}
+
+.event-row:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.event-row-selected,
+.event-row-selected:hover {
+  background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+}
+
+.event-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* ---- 検索 ---- */
+
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.search-bar input,
+.search-bar select,
+.search-bar button {
+  font: inherit;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.keyword-input {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.id-search {
+  display: flex;
+  gap: 4px;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.id-search input {
+  width: 11em;
+  min-width: 0;
+}
+
+.id-search button {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.id-filter-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface));
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* ---- 詳細 ---- */
+
+.event-detail {
+  flex: 0 0 min(400px, 40%);
+  overflow: auto;
+  padding: 8px 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px 6px 0 0;
+  font-size: 0.9rem;
+}
+
+.event-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.event-detail h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.event-detail h4 {
+  margin: 16px 0 4px;
+  font-size: 0.9rem;
+}
+
+.close-button {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.event-detail-message {
+  margin: 8px 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.detail-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.detail-list dt {
+  color: var(--muted);
+}
+
+.detail-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.detail-row {
+  display: contents;
+}
+
+.detail-list code {
+  font-size: 0.8rem;
+}
+
+.id-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
