@@ -1,0 +1,36 @@
+name: 不具合の報告 / Bug report
+description: デモ画面や取り込みなどの不具合 / Something is not working
+title: "fix: <不具合の内容 / summary>"
+labels: ["type:bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        デモのデータはすべて架空の合成データです。実在のシステムの情報は書かないでください。
+        All demo data is synthetic. Please do not include information about real systems.
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順 / Steps to reproduce
+      description: 開いた URL(条件が入ったもの)があれば貼る / Paste the URL if possible
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待した動き / Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動き / Actual behavior
+      description: スクリーンショットがあれば貼る / Screenshots are welcome
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: 環境 / Environment
+      description: ブラウザ・端末・表示言語 / Browser, device, language
+      placeholder: Chrome 140 / iPhone 15 / English
