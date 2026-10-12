@@ -106,6 +106,48 @@ describe('generate', () => {
   });
 });
 
+describe('then', () => {
+  const linked = scenarioDefinitionSchema.parse({
+    ...input,
+    noise: { events: 0 },
+    story: [
+      {
+        at: '10:00:00',
+        source: 'app',
+        type: 'db_timeout',
+        severity: 'error',
+        message: 'Timed out',
+        ids: { trace: '{trace}', user: '{user}' },
+        count: 20,
+        over: '00:10:00',
+        then: [
+          {
+            after: '00:00:02',
+            source: 'business',
+            type: 'order_failed',
+            severity: 'error',
+            message: 'Order {order} failed',
+            ids: { order: '{order}', user: '{user}' },
+            chance: 0.5,
+            answer: true,
+          },
+        ],
+      },
+    ],
+  });
+
+  it('同じ発生の then は同じ ID を使い、少し後に起きる', () => {
+    const { files, scenario } = generate(linked);
+    const app = files.find((f) => f.name === 'app.jsonl')?.lines ?? [];
+    const business = files.find((f) => f.name === 'business.csv')?.lines.slice(1) ?? [];
+    const appUsers = new Set(app.map((l) => (JSON.parse(l) as { user_id: string }).user_id));
+    expect(business.length).toBeGreaterThan(0);
+    expect(business.length).toBeLessThan(20);
+    for (const row of business) expect(appUsers.has(row.split(',')[4] ?? '')).toBe(true);
+    expect(scenario.answer.sequence).toEqual(['business.csv:2']);
+  });
+});
+
 describe('scenarioDefinitionSchema', () => {
   const story = input.story[0];
 

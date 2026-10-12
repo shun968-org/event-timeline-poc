@@ -28,47 +28,71 @@ const offsetSchema = z.string().transform((value, ctx) => {
 });
 
 /**
- * 関連 ID の値。固定の値か、`{order}` のように書くとイベントごとにランダムな値になる。
- * 同じ筋書きの行の中では、`{order}` などは1回の発生ごとに1つの値に決まり、メッセージにも埋め込める。
+ * 関連 ID の値。固定の値か、`{order}` のように書くと発生ごとにランダムな値になる。
+ * `{order}` などは1回の発生ごとに1つの値に決まり、`then` のイベントとメッセージでも同じ値になる。
  */
 const idValueSchema = z.string().min(1);
 
+/** イベントの中身(筋書きの行と `then` で共通) */
+const eventBodyShape = {
+  source: z.enum(SOURCES),
+  type: z.string().min(1),
+  severity: severitySchema,
+  /** `{order}` `{user}` `{trace}` `{i}`(何回目か)を埋め込める */
+  message: z.string().min(1),
+  ids: z.partialRecord(z.enum(ID_KINDS), idValueSchema).default({}),
+  fields: z.record(z.string(), z.string()).default({}),
+  /** 正解の順序に含める(含めるのは最初に発生した1件) */
+  answer: z.boolean().default(false),
+};
+
+type EventBody = z.output<z.ZodObject<typeof eventBodyShape>>;
+
+/** 情報源が持てない ID・使えない項目をエラーにする */
+function checkSource(event: EventBody, ctx: z.RefinementCtx) {
+  for (const kind of Object.keys(event.ids) as IdKind[]) {
+    if (!SOURCE_ID_KINDS[event.source].includes(kind)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['ids', kind],
+        message: `${event.source} は ${kind} の ID を持てない`,
+      });
+    }
+  }
+  for (const field of Object.keys(event.fields)) {
+    if (!SOURCE_EXTRA_FIELDS[event.source].includes(field)) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['fields', field],
+        message: `${event.source} で使える項目は ${SOURCE_EXTRA_FIELDS[event.source].join(', ') || 'なし'}`,
+      });
+    }
+  }
+}
+
+/** 発生のたびに続けて起きるイベント(例: タイムアウトのあとの注文失敗) */
+const followEventSchema = z
+  .strictObject({
+    ...eventBodyShape,
+    /** 元のイベントからの遅れ(HH:mm:ss) */
+    after: offsetSchema.default(0),
+    /** 続けて起きる割合(0〜1) */
+    chance: z.number().min(0).max(1).default(1),
+  })
+  .superRefine(checkSource);
+
 const storyEventSchema = z
   .strictObject({
+    ...eventBodyShape,
     /** 開始からの経過時間(HH:mm:ss) */
     at: offsetSchema,
-    source: z.enum(SOURCES),
-    type: z.string().min(1),
-    severity: severitySchema,
-    /** `{order}` `{user}` `{trace}` `{i}`(何回目か)を埋め込める */
-    message: z.string().min(1),
-    ids: z.partialRecord(z.enum(ID_KINDS), idValueSchema).default({}),
-    fields: z.record(z.string(), z.string()).default({}),
     /** 発生回数。2以上なら `over` の間に散らばる */
     count: z.int().positive().default(1),
     over: offsetSchema.optional(),
-    /** 正解の順序に含める(含めるのは1回目の発生) */
-    answer: z.boolean().default(false),
+    then: z.array(followEventSchema).default([]),
   })
   .superRefine((event, ctx) => {
-    for (const kind of Object.keys(event.ids) as IdKind[]) {
-      if (!SOURCE_ID_KINDS[event.source].includes(kind)) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['ids', kind],
-          message: `${event.source} は ${kind} の ID を持てない`,
-        });
-      }
-    }
-    for (const field of Object.keys(event.fields)) {
-      if (!SOURCE_EXTRA_FIELDS[event.source].includes(field)) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['fields', field],
-          message: `${event.source} で使える項目は ${SOURCE_EXTRA_FIELDS[event.source].join(', ') || 'なし'}`,
-        });
-      }
-    }
+    checkSource(event, ctx);
     if (event.count > 1 && event.over === undefined) {
       ctx.addIssue({ code: 'custom', path: ['over'], message: 'count が2以上なら over が要る' });
     }
@@ -93,8 +117,12 @@ export const scenarioDefinitionSchema = z
     rootCause: localizedTextSchema,
     story: z.array(storyEventSchema).nonempty(),
   })
-  .refine((scenario) => scenario.story.some((event) => event.answer), {
-    path: ['story'],
-    message: 'answer: true のイベントが1つ以上要る',
-  });
+  .refine(
+    (scenario) =>
+      scenario.story.some((event) => event.answer || event.then.some((next) => next.answer)),
+    {
+      path: ['story'],
+      message: 'answer: true のイベントが1つ以上要る',
+    },
+  );
 export type ScenarioDefinition = z.output<typeof scenarioDefinitionSchema>;
