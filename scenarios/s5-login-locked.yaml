@@ -1,0 +1,76 @@
+# 問い合わせ: パスワード誤りの連続でアカウントがロックされた
+name: s5-login-locked
+kind: inquiry
+seed: 505
+start: "2026-10-05T00:00:00+09:00"
+noise: { events: 9500 }
+title:
+  ja: ログインできなくなった
+  en: "\"I can't log in anymore\""
+summary:
+  ja: ユーザー U-77102 から、夜にサポートへ「急にログインできなくなった」と問い合わせがありました。
+  en: In the evening, user U-77102 contacted support saying they suddenly could not log in.
+howToStart:
+  ja: 関連 ID の欄にユーザー ID「U-77102」を入れて、その人に起きたことを時系列で追ってみよう。
+  en: Enter the user ID "U-77102" in the related ID box and follow what happened to that user in order.
+rootCause:
+  ja: 19:10 からパスワードの誤りが5回続き、アカウントが自動でロックされた。その後のログインはロック中として拒否された。サポートが本人確認のうえ 19:40 にロックを解除し、ログインできるようになった。
+  en: Five wrong passwords in a row from 19:10 locked the account automatically, and later logins were rejected while it was locked. Support verified the user's identity and unlocked the account at 19:40, after which login succeeded.
+story:
+  # 同じ時間帯の無関係な設定の再読み込み(調査の寄り道になる)
+  - at: "19:05:00"
+    source: infra
+    type: config_reload
+    severity: info
+    message: auth-api configuration reloaded
+    fields: { host: auth-01, service: auth-api }
+  - at: "19:10:00"
+    source: app
+    type: login_failed
+    severity: warn
+    message: "Login failed: invalid password ({i}/5)"
+    ids: { trace: "{trace}", user: U-77102 }
+    fields: { service: auth-api }
+    count: 5
+    over: "00:02:00"
+    answer: true
+  - at: "19:12:30"
+    source: audit
+    type: account_locked
+    severity: warn
+    message: Account locked after 5 failed login attempts
+    ids: { user: U-77102 }
+    fields: { actor: system }
+    answer: true
+  - at: "19:13:00"
+    source: app
+    type: login_rejected
+    severity: warn
+    message: "Login rejected: account is locked"
+    ids: { trace: "{trace}", user: U-77102 }
+    fields: { service: auth-api }
+    count: 3
+    over: "00:20:00"
+  - at: "19:38:00"
+    source: audit
+    type: view_user
+    severity: info
+    message: "Customer inquiry: cannot log in"
+    ids: { user: U-77102 }
+    fields: { actor: support-ito }
+  - at: "19:40:00"
+    source: audit
+    type: unlock_account
+    severity: info
+    message: Account unlocked after identity verification
+    ids: { user: U-77102 }
+    fields: { actor: support-ito }
+    answer: true
+  - at: "19:42:00"
+    source: app
+    type: login_succeeded
+    severity: info
+    message: Login succeeded
+    ids: { trace: c41e08b7a95d2f63, user: U-77102 }
+    fields: { service: auth-api }
+    answer: true

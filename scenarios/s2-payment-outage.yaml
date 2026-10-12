@@ -1,0 +1,90 @@
+# 障害: 外部の決済サービスの応答遅延
+name: s2-payment-outage
+kind: incident
+seed: 202
+start: "2026-10-02T00:00:00+09:00"
+noise: { events: 9400 }
+title:
+  ja: 決済が保留のまま進まない
+  en: Payments stuck in pending
+summary:
+  ja: 午後から「支払いが完了しない」注文が増え、応答時間のアラートが鳴りました。最後は管理者が保留をまとめて解除しています。
+  en: In the afternoon, more and more orders never completed payment and a latency alert fired. Eventually an admin released the pending payments in bulk.
+howToStart:
+  ja: 業務処理履歴の「決済保留」が増え始めた時刻の前後で、アプリケーションログに何が出ているかを見てみよう。
+  en: Look at the application log around the time the "payment pending" records start piling up in the business records.
+rootCause:
+  ja: 外部の決済サービス ExamplePay(架空)の応答が 14:20 ごろから遅くなり、14:35 からはタイムアウトした。決済が保留になり、応答時間のアラートが鳴った。回復後、管理者が保留を手動で解除した。
+  en: The external payment service ExamplePay (fictional) slowed down from about 14:20 and started timing out at 14:35. Payments went pending and the latency alert fired. After it recovered, an admin released the pending payments manually.
+story:
+  - at: "14:20:00"
+    source: app
+    type: payment_slow
+    severity: warn
+    message: ExamplePay authorize took 8.2s (timeout 10s)
+    ids: { trace: "{trace}", user: "{user}" }
+    fields: { service: checkout-api }
+    count: 45
+    over: "00:15:00"
+    answer: true
+  - at: "14:35:00"
+    source: app
+    type: payment_timeout
+    severity: error
+    message: ExamplePay authorize timed out after 10s
+    ids: { trace: "{trace}", user: "{user}" }
+    fields: { service: checkout-api }
+    count: 160
+    over: "01:00:00"
+    answer: true
+    # タイムアウトした利用者の決済が保留になる(同じユーザー ID でつながる)
+    then:
+      - after: "00:00:02"
+        source: business
+        type: payment_pending
+        severity: warn
+        message: "Payment pending: waiting for gateway response"
+        ids: { order: "{order}", user: "{user}" }
+        chance: 0.95
+        answer: true
+  - at: "14:46:00"
+    source: infra
+    type: alert
+    severity: error
+    message: "Alert: checkout-api p95 latency 9.8s (threshold 2s)"
+    fields: { host: web-01, service: checkout-api }
+    answer: true
+  # CPU は平常どおり(アプリ自体の負荷ではないことの手がかり)
+  - at: "15:00:05"
+    source: infra
+    type: metric
+    severity: info
+    message: CPU usage 18%
+    fields: { host: web-01, service: checkout-api }
+  - at: "15:38:00"
+    source: app
+    type: payment_recovered
+    severity: info
+    message: ExamplePay authorize latency back to 240ms
+    fields: { service: checkout-api }
+  - at: "15:45:00"
+    source: infra
+    type: alert_resolved
+    severity: info
+    message: "Resolved: checkout-api p95 latency 0.4s"
+    fields: { host: web-01, service: checkout-api }
+  - at: "16:05:00"
+    source: audit
+    type: release_pending_payments
+    severity: info
+    message: Released 150 pending payments for re-capture
+    fields: { actor: admin-tanaka }
+    answer: true
+  - at: "16:06:00"
+    source: business
+    type: payment_captured
+    severity: info
+    message: Payment captured after manual release
+    ids: { order: "{order}", user: "{user}" }
+    count: 140
+    over: "00:15:00"

@@ -1,0 +1,69 @@
+# 障害: 管理者が在庫マスタを誤って一括更新した
+name: s3-master-update
+kind: incident
+seed: 303
+start: "2026-10-03T00:00:00+09:00"
+noise: { events: 9500 }
+title:
+  ja: 出荷指示が止まった
+  en: Shipping instructions stopped
+summary:
+  ja: 午後1時ごろから注文が「在庫不足」で保留になり始め、倉庫への出荷指示が止まりました。直前にはサービスのデプロイもありました。
+  en: From around 1 p.m., orders went on hold for "insufficient stock" and shipping instructions to the warehouse stopped. There was also a service deploy shortly before.
+howToStart:
+  ja: 在庫引当のエラーが出始める直前に、監視だけでなく操作・監査ログに何があったかも見てみよう。
+  en: Just before the stock allocation errors begin, check not only monitoring but also the operation / audit log.
+rootCause:
+  ja: 13:00 に管理者(admin-suzuki)が在庫マスタを一括更新し、在庫数を誤って 0 にした。在庫引当が失敗して注文が保留になり、出荷指示が止まった。直前の catalog-api のデプロイは無関係。15:10 にバックアップから戻して回復した。
+  en: At 13:00 an admin (admin-suzuki) bulk-updated the inventory master and mistakenly set stock quantities to 0. Stock allocation failed, orders went on hold and shipping instructions stopped. The catalog-api deploy just before was unrelated. Restoring from backup at 15:10 fixed it.
+story:
+  # 無関係なデプロイ(調査の寄り道になる)
+  - at: "12:50:00"
+    source: infra
+    type: deploy
+    severity: info
+    message: Deployment of catalog-api v1.8.0 completed
+    fields: { host: web-02, service: catalog-api }
+  - at: "13:00:00"
+    source: audit
+    type: bulk_update_inventory
+    severity: info
+    message: "Bulk update of inventory master: 1,204 rows (column: stock_qty, file: stock_update_1003.csv)"
+    fields: { actor: admin-suzuki }
+    answer: true
+  - at: "13:01:00"
+    source: app
+    type: stock_allocation_failed
+    severity: error
+    message: "Stock allocation failed: available quantity is 0"
+    ids: { trace: "{trace}", user: "{user}" }
+    fields: { service: checkout-api }
+    count: 110
+    over: "02:05:00"
+    answer: true
+    # 引当に失敗した利用者の注文が保留になる(同じユーザー ID でつながる)
+    then:
+      - after: "00:00:01"
+        source: business
+        type: order_on_hold
+        severity: warn
+        message: "Order on hold: insufficient stock"
+        ids: { order: "{order}", user: "{user}" }
+        answer: true
+  - at: "13:30:00"
+    source: business
+    type: shipment_halted
+    severity: error
+    message: "Shipment instructions halted: no allocatable orders for warehouse WH-East"
+    answer: true
+  - at: "15:10:00"
+    source: audit
+    type: bulk_update_inventory
+    severity: info
+    message: "Bulk update of inventory master: 1,204 rows restored from backup"
+    fields: { actor: admin-suzuki }
+  - at: "15:20:00"
+    source: business
+    type: shipment_resumed
+    severity: info
+    message: Shipment instructions resumed for warehouse WH-East

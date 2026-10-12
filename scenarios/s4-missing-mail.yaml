@@ -1,0 +1,79 @@
+# 問い合わせ: メール送信キューの滞留
+name: s4-missing-mail
+kind: inquiry
+seed: 404
+start: "2026-10-04T00:00:00+09:00"
+noise: { events: 9500 }
+title:
+  ja: 注文確認メールが届かない
+  en: "\"I never got my order confirmation email\""
+summary:
+  ja: 注文 O-30517 のお客様から、サポートに「注文確認メールが届かない」と問い合わせがありました。
+  en: The customer who placed order O-30517 contacted support saying the order confirmation email never arrived.
+howToStart:
+  ja: 関連 ID の欄に注文 ID「O-30517」を入れて絞り込み、そこからユーザー ID・トレース ID をたどってみよう。
+  en: Enter the order ID "O-30517" in the related ID box, then follow the user ID and trace ID from there.
+rootCause:
+  ja: 注文は 08:52 に正常に確定していた。ところがメール送信キューが朝から滞留しており、確認メールは再試行待ちになっていた(09:05 にキュー長のアラート)。キューが解消した 11:32 に、約2時間40分遅れて送信された。
+  en: The order was confirmed normally at 08:52, but the mail queue had been backed up since the morning and the confirmation email was waiting for retry (queue-length alert at 09:05). It was finally sent at 11:32, about 2 h 40 min late, once the queue drained.
+story:
+  - at: "08:30:00"
+    source: app
+    type: mail_send_retry
+    severity: warn
+    message: "Mail delivery deferred: SMTP relay busy, queued for retry"
+    ids: { trace: "{trace}", user: "{user}" }
+    fields: { service: mail-worker }
+    count: 320
+    over: "03:00:00"
+  - at: "08:52:10"
+    source: app
+    type: http_request
+    severity: info
+    message: POST /api/orders 201 182ms
+    ids: { trace: 7f3a9c21d84b0e56, user: U-48213 }
+    fields: { service: checkout-api }
+  - at: "08:52:11"
+    source: business
+    type: order_confirmed
+    severity: info
+    message: Order confirmed (2 items)
+    ids: { order: O-30517, user: U-48213 }
+    fields: { amount: "12800" }
+    answer: true
+  - at: "08:52:40"
+    source: app
+    type: mail_send_retry
+    severity: warn
+    message: "Mail delivery deferred: SMTP relay busy, queued for retry"
+    ids: { trace: 7f3a9c21d84b0e56, user: U-48213 }
+    fields: { service: mail-worker }
+    answer: true
+  - at: "09:05:00"
+    source: infra
+    type: alert
+    severity: warn
+    message: "Alert: mail-worker queue length 2,340 (threshold 1,000)"
+    fields: { host: worker-01, service: mail-worker }
+    answer: true
+  - at: "10:15:00"
+    source: audit
+    type: view_order
+    severity: info
+    message: "Customer inquiry: order confirmation email not received"
+    ids: { order: O-30517, user: U-48213 }
+    fields: { actor: support-sato }
+  - at: "11:30:00"
+    source: infra
+    type: alert_resolved
+    severity: info
+    message: "Resolved: mail-worker queue length 12"
+    fields: { host: worker-01, service: mail-worker }
+  - at: "11:32:05"
+    source: app
+    type: mail_sent
+    severity: info
+    message: Order confirmation mail sent (delayed 2h40m)
+    ids: { trace: 7f3a9c21d84b0e56, user: U-48213 }
+    fields: { service: mail-worker }
+    answer: true
