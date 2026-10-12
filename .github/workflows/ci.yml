@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  # 言語非依存の検査。言語が決まったら lint/test のジョブを追加する。
+  # ルールセットの必須チェック。ジョブ名を変えるときは scripts/setup-github-repo.sh も直す
   repo-checks:
     runs-on: ubuntu-latest
     steps:
@@ -18,10 +18,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
+          cache: npm
 
       # prepare(lefthook install)は CI では不要なので無効化する
-      - run: npm install --ignore-scripts
+      - run: npm ci --ignore-scripts
+
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
 
       - name: ADR の書式
         run: |

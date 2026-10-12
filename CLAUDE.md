@@ -3,18 +3,25 @@
 ## このリポジトリ
 
 システムや業務の異なる情報源のイベントを共通の時間軸に並べ、発生順序や関連性を確認する仕組みの試作(PoC)。
-概要は [README.md](README.md)。特定の言語・フレームワークには依存しない方針で、技術選定は ADR に残す。
+概要は [README.md](README.md)。技術選定は ADR に残す(TypeScript・npm workspaces は ADR-0001、静的サイトでの公開は ADR-0002)。
+
+## 構成とコマンド
+
+- `packages/core`(共通の型・スキーマ)、`generator`(合成データ生成)、`ingest`(取り込み CLI)、`web`(React + Vite の画面)。
+  各パッケージは `src/index.ts` をそのまま公開し、ビルドせずに参照する(Vite・tsx・Vitest が TypeScript を直接読む)
+- `npm run dev`(画面)/ `npm run typecheck` / `npm run lint` / `npm run format:check` / `npm test` / `npm run build`。
+  CI の `repo-checks` が同じものを実行する
 
 ## 開発規約
 
 - ブランチ・コミット・PR の規約は [CONTRIBUTING.md](CONTRIBUTING.md)。lefthook と commitlint で機械的に強制される
 - ADR は `docs/adr/`(`managing-adrs` スキル)。要件・設計ドキュメントは `managing-notion-docs` スキル
 - Notion(`ntn`)の認証と権限制御は `managing-notion-docs` スキルの「前提条件」。`NOTION_API_TOKEN`(最小権限の内部インテグレーション)を使い、`ntn login` / `ntn auth` は使わない
-- CI は `.github/workflows/ci.yml`(ADR 書式・PR タイトル・ブランチ名)。言語が決まったら lint/test のジョブを足す
+- CI は `.github/workflows/ci.yml`(型検査・lint・書式・テスト・ビルド・ADR 書式・PR タイトル・ブランチ名)
 
 ## Dev container
 
-- `.devcontainer/` に定義。ベースは言語非依存の Debian イメージで、Node.js(lefthook/commitlint 用)と `gh` を含む。
+- `.devcontainer/` に定義。ベースは言語非依存の Debian イメージで、Node.js(実装・lefthook/commitlint 用)と `gh` を含む。
   他の言語は `devcontainer.json` の `features` に追加する
 - Claude Code の sandbox(bubblewrap)は使わない。ホストのカーネル設定
   (Ubuntu 系の `kernel.apparmor_restrict_unprivileged_userns=1`)次第で動かず、各自のホスト設定に頼れないため。

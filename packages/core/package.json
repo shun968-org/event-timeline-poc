@@ -1,0 +1,12 @@
+{
+  "name": "@event-timeline/core",
+  "description": "共通イベント形式・静的 JSON の型・情報源の定義ファイルのスキーマ",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p ."
+  }
+}
