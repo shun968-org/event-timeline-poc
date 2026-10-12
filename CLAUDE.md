@@ -13,6 +13,8 @@
   CI の `repo-checks` が同じものを実行する
 - 合成データ: `npm run generate -- <シナリオ名> | --all`。`scenarios/*.yaml` から `datasets/<シナリオ名>/`(git 管理外)を作る。
   イベント ID は `<ファイル名>:<行番号>`(`eventId`)で、正解の順序もこの ID で持つ
+- 取り込み: `npm run ingest -- <データセット名> | --all`。`sources/*.yaml` の定義で `datasets/` を読み、
+  `packages/web/public/data/`(git 管理外)に `<データセット>.json` と `index.json` を書く
 - 画面の文言は `packages/web/src/i18n/ja.json`・`en.json` に同じキーで足す(片方だけだとテストが失敗する)
 
 ## 開発規約

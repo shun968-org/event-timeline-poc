@@ -10,6 +10,7 @@
     "dev": "npm run dev -w @event-timeline/web",
     "build": "npm run build -w @event-timeline/web",
     "generate": "npm run generate -w @event-timeline/generator --",
+    "ingest": "npm run ingest -w @event-timeline/ingest --",
     "typecheck": "npm run typecheck --workspaces",
     "lint": "eslint .",
     "format": "prettier --write .",
