@@ -1,4 +1,5 @@
 import { LANGS, type Lang } from '@event-timeline/core';
+import { FeedbackLink } from '../feedback';
 import { useT } from '../i18n';
 
 interface Props {
@@ -22,12 +23,20 @@ export function Header({ onHome, onChangeLang }: Props) {
         >
           {t('app.title')}
         </a>
-        <div className="lang-switch" role="group" aria-label={t('header.language')}>
-          {LANGS.map((l) => (
-            <button key={l} type="button" aria-pressed={l === lang} onClick={() => onChangeLang(l)}>
-              {t(`header.lang.${l}`)}
-            </button>
-          ))}
+        <div className="header-actions">
+          <FeedbackLink kind="general" className="header-feedback" />
+          <div className="lang-switch" role="group" aria-label={t('header.language')}>
+            {LANGS.map((l) => (
+              <button
+                key={l}
+                type="button"
+                aria-pressed={l === lang}
+                onClick={() => onChangeLang(l)}
+              >
+                {t(`header.lang.${l}`)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
       <p className="synthetic-notice">{t('header.syntheticNotice')}</p>

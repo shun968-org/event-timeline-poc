@@ -64,5 +64,10 @@
   "answer.hide": "答えを閉じる",
   "answer.rootCause": "根本原因",
   "answer.sequence": "原因から影響までの順序(押すとそのイベントに移ります)",
-  "filter.toggle": "絞り込み"
+  "filter.toggle": "絞り込み",
+  "feedback.title": "感想・要望",
+  "feedback.lead": "使ってみた感想や要望を、GitHub Discussions で聞かせてください(GitHub のアカウントが要ります)。",
+  "feedback.general": "感想を送る",
+  "feedback.ideas": "改善の要望を送る",
+  "feedback.polls": "「本番でも使いたいか」に投票する"
 }

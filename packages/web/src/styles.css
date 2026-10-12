@@ -64,9 +64,10 @@ button {
 
 .header-bar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 4px 12px;
   padding: 8px 16px;
 }
 
@@ -188,6 +189,38 @@ button {
   margin: 4px 0 0;
   white-space: pre-wrap;
   font-size: 0.8rem;
+}
+
+/* ---- 感想・要望 ---- */
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-feedback {
+  font-size: 0.85rem;
+}
+
+.feedback {
+  margin-top: 16px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.feedback p {
+  margin: 0 0 4px;
+}
+
+.feedback ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 /* ---- タイムライン ---- */

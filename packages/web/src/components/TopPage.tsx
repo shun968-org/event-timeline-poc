@@ -1,4 +1,5 @@
 import type { IndexFile } from '@event-timeline/core';
+import { FeedbackLinks } from '../feedback';
 import { useT } from '../i18n';
 
 interface Props {
@@ -44,6 +45,7 @@ export function TopPage({ index, onSelect }: Props) {
           ))}
         </ul>
       )}
+      <FeedbackLinks />
     </main>
   );
 }

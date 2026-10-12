@@ -1,5 +1,6 @@
 import type { Scenario, SourceInfo, TimelineEvent } from '@event-timeline/core';
 import { useState } from 'react';
+import { FeedbackLinks } from '../feedback';
 import { useT } from '../i18n';
 import { formatShort } from '../timeline/time-format';
 import type { TimeZoneMode } from '../view-state';
@@ -55,6 +56,7 @@ export function AnswerPanel({ scenario, eventById, sources, tz, onJump }: Props)
               );
             })}
           </ol>
+          <FeedbackLinks />
         </div>
       )}
     </section>
