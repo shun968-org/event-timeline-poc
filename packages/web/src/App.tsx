@@ -1,7 +1,9 @@
+import { translate } from './i18n';
+
 export function App() {
   return (
     <main>
-      <h1>Event Timeline PoC</h1>
+      <h1>{translate('ja', 'app.title')}</h1>
     </main>
   );
 }

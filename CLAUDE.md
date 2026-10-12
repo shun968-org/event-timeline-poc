@@ -11,6 +11,7 @@
   各パッケージは `src/index.ts` をそのまま公開し、ビルドせずに参照する(Vite・tsx・Vitest が TypeScript を直接読む)
 - `npm run dev`(画面)/ `npm run typecheck` / `npm run lint` / `npm run format:check` / `npm test` / `npm run build`。
   CI の `repo-checks` が同じものを実行する
+- 画面の文言は `packages/web/src/i18n/ja.json`・`en.json` に同じキーで足す(片方だけだとテストが失敗する)
 
 ## 開発規約
 
