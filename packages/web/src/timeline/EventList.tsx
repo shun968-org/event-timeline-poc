@@ -1,6 +1,6 @@
 import type { TimelineEvent } from '@event-timeline/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useT } from '../i18n';
 import type { TimeZoneMode } from '../view-state';
 import { sourceColor } from './colors';
@@ -16,10 +16,24 @@ interface Props {
   sourcePosition: ReadonlyMap<string, number>;
   sourceLabel: (source: string) => string;
   tz: TimeZoneMode;
+  selectedId: string | undefined;
+  onSelect: (event: TimelineEvent) => void;
+  /** 該当0件のときの文言 */
+  emptyMessage: string;
 }
 
 /** イベントの一覧。1万件でも滑らかに動くよう、見えている行だけを描く(仮想スクロール) */
-export function EventList({ events, times, indexes, sourcePosition, sourceLabel, tz }: Props) {
+export function EventList({
+  events,
+  times,
+  indexes,
+  sourcePosition,
+  sourceLabel,
+  tz,
+  selectedId,
+  onSelect,
+  emptyMessage,
+}: Props) {
   const { t } = useT();
   const scrollRef = useRef<HTMLDivElement>(null);
   // React Compiler は使っていないので、メモ化できない API でも問題ない
@@ -33,27 +47,52 @@ export function EventList({ events, times, indexes, sourcePosition, sourceLabel,
     initialRect: { width: 0, height: 20 * ROW_HEIGHT },
   });
 
+  // 選ばれたイベントが一覧の外(URL を開いたとき・答え合わせから移ったとき)なら、そこまで動かす
+  const selectedPosition = selectedId ? indexes.findIndex((i) => events[i]?.id === selectedId) : -1;
+  useEffect(() => {
+    // 'auto' は見えていれば動かさない
+    if (selectedPosition >= 0) virtualizer.scrollToIndex(selectedPosition, { align: 'auto' });
+    // 選択が変わったときだけ動かす(スクロールのたびに戻さない)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId, selectedPosition]);
+
   if (indexes.length === 0) {
-    return <p className="event-list-empty">{t('timeline.noEvents')}</p>;
+    return <p className="event-list-empty">{emptyMessage}</p>;
   }
 
   return (
-    <div className="event-list" ref={scrollRef} role="list" aria-label={t('timeline.listLabel')}>
+    <div
+      className="event-list"
+      ref={scrollRef}
+      role="listbox"
+      aria-label={t('timeline.listLabel')}
+      tabIndex={-1}
+    >
       <div style={{ height: virtualizer.getTotalSize(), position: 'relative' }}>
         {virtualizer.getVirtualItems().map((item) => {
           const index = indexes[item.index];
           const event = index === undefined ? undefined : events[index];
           if (index === undefined || !event) return null;
           const high = event.severity === 'error' || event.severity === 'critical';
+          const selected = event.id === selectedId;
           return (
             <div
               key={event.id}
-              role="listitem"
-              className={`event-row${high ? ' event-row-high' : ''}`}
+              role="option"
+              aria-selected={selected}
+              tabIndex={0}
+              className={`event-row${high ? ' event-row-high' : ''}${selected ? ' event-row-selected' : ''}`}
               style={{
                 transform: `translateY(${item.start}px)`,
                 height: ROW_HEIGHT,
                 ['--source-color' as string]: sourceColor(sourcePosition.get(event.source) ?? 0),
+              }}
+              onClick={() => onSelect(event)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelect(event);
+                }
               }}
             >
               <time className="event-time" dateTime={event.t}>

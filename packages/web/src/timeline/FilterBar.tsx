@@ -21,7 +21,10 @@ export function FilterBar({ state, sources, types, tz, onChange }: Props) {
   const { lang, t } = useT();
   const hasPeriod = state.from !== undefined || state.to !== undefined;
   const hasFilter =
-    hasPeriod || state.sources.length + state.types.length + state.severities.length > 0;
+    hasPeriod ||
+    state.q !== undefined ||
+    state.idValue !== undefined ||
+    state.sources.length + state.types.length + state.severities.length > 0;
 
   return (
     <div className="filter-bar">
@@ -102,6 +105,9 @@ export function FilterBar({ state, sources, types, tz, onChange }: Props) {
                 sources: [],
                 types: [],
                 severities: [],
+                q: undefined,
+                idKind: undefined,
+                idValue: undefined,
               })
             }
           >
