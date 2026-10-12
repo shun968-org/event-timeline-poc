@@ -14,5 +14,17 @@
   "status.loading": "Loading…",
   "error.load": "Failed to load the data. Please try again later.",
   "error.datasetNotFound": "Dataset \"{name}\" was not found.",
-  "error.backToTop": "Back to the scenario list"
+  "error.backToTop": "Back to the scenario list",
+  "timeline.count": "{shown} / {total} events",
+  "timeline.noEvents": "No events match the current filters.",
+  "timeline.listLabel": "Events (in order of occurrence)",
+  "histogram.label": "Event counts over time (colored by source)",
+  "histogram.hint": "Drag across the chart to filter by that time range.",
+  "filter.sources": "Sources",
+  "filter.severities": "Severity",
+  "filter.types": "Types",
+  "filter.timeZone": "Time zone",
+  "filter.period": "Period: {from} – {to} ({tz})",
+  "filter.clearPeriod": "Clear period",
+  "filter.clearAll": "Clear all filters"
 }
