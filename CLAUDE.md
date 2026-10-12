@@ -25,6 +25,8 @@
 - ADR は `docs/adr/`(`managing-adrs` スキル)。要件・設計ドキュメントは `managing-notion-docs` スキル
 - Notion(`ntn`)の認証と権限制御は `managing-notion-docs` スキルの「前提条件」。`NOTION_API_TOKEN`(最小権限の内部インテグレーション)を使い、`ntn login` / `ntn auth` は使わない
 - CI は `.github/workflows/ci.yml`(型検査・lint・書式・テスト・ビルド・ADR 書式・PR タイトル・ブランチ名)
+- デプロイは `.github/workflows/deploy.yml`。main への反映で、生成 → 取り込み → ビルド → `scripts/check-public-files.sh` → Cloudflare Pages。
+  Cloudflare のトークンは GitHub の環境 `production`(main だけ)のシークレットにあり、devContainer には置かない(ADR-0002)
 
 ## Dev container
 
