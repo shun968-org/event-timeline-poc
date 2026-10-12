@@ -63,5 +63,6 @@
   "answer.show": "答えを見る",
   "answer.hide": "答えを閉じる",
   "answer.rootCause": "根本原因",
-  "answer.sequence": "原因から影響までの順序(押すとそのイベントに移ります)"
+  "answer.sequence": "原因から影響までの順序(押すとそのイベントに移ります)",
+  "filter.toggle": "絞り込み"
 }

@@ -7,6 +7,8 @@ interface Props {
   source: SourceInfo | undefined;
   onSelectId: (kind: IdKind, value: string) => void;
   onClose: () => void;
+  /** スマートフォンの画面幅では、サイドパネルではなく全画面で開く */
+  fullScreen: boolean;
 }
 
 function rawValue(value: unknown): string {
@@ -14,13 +16,17 @@ function rawValue(value: unknown): string {
 }
 
 /** 選んだイベントの共通項目と、変換前の元データ(基本設計 F-04) */
-export function EventDetail({ event, source, onSelectId, onClose }: Props) {
+export function EventDetail({ event, source, onSelectId, onClose, fullScreen }: Props) {
   const { lang, t } = useT();
   const time = Date.parse(event.t);
   const idEntries = Object.entries(event.ids) as [IdKind, string[]][];
 
   return (
-    <aside className="event-detail" aria-label={t('detail.title')}>
+    <aside
+      className={`event-detail${fullScreen ? ' event-detail-fullscreen' : ''}`}
+      aria-label={t('detail.title')}
+      {...(fullScreen && { role: 'dialog', 'aria-modal': true })}
+    >
       <div className="event-detail-head">
         <h3>{t('detail.title')}</h3>
         <button

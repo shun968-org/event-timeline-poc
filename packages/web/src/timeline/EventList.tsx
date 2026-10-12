@@ -6,7 +6,8 @@ import type { TimeZoneMode } from '../view-state';
 import { sourceColor } from './colors';
 import { formatShort } from './time-format';
 
-const ROW_HEIGHT = 34;
+/** 行の高さ。スマートフォンの画面幅では2行のカードにする */
+export const ROW_HEIGHT = { wide: 34, compact: 56 } as const;
 
 interface Props {
   events: readonly TimelineEvent[];
@@ -20,6 +21,8 @@ interface Props {
   onSelect: (event: TimelineEvent) => void;
   /** 該当0件のときの文言 */
   emptyMessage: string;
+  /** スマートフォンの画面幅(2行のカード表示) */
+  compact: boolean;
 }
 
 /** イベントの一覧。1万件でも滑らかに動くよう、見えている行だけを描く(仮想スクロール) */
@@ -33,7 +36,9 @@ export function EventList({
   selectedId,
   onSelect,
   emptyMessage,
+  compact,
 }: Props) {
+  const rowHeight = compact ? ROW_HEIGHT.compact : ROW_HEIGHT.wide;
   const { t } = useT();
   const scrollRef = useRef<HTMLDivElement>(null);
   // React Compiler は使っていないので、メモ化できない API でも問題ない
@@ -41,10 +46,10 @@ export function EventList({
   const virtualizer = useVirtualizer({
     count: indexes.length,
     getScrollElement: () => scrollRef.current,
-    estimateSize: () => ROW_HEIGHT,
+    estimateSize: () => rowHeight,
     overscan: 20,
     // 大きさを測れない環境(テストなど)でも先頭の行を描く
-    initialRect: { width: 0, height: 20 * ROW_HEIGHT },
+    initialRect: { width: 0, height: 20 * rowHeight },
   });
 
   // 選ばれたイベントが一覧の外(URL を開いたとき・答え合わせから移ったとき)なら、そこまで動かす
@@ -62,7 +67,7 @@ export function EventList({
 
   return (
     <div
-      className="event-list"
+      className={`event-list${compact ? ' event-list-compact' : ''}`}
       ref={scrollRef}
       role="listbox"
       aria-label={t('timeline.listLabel')}
@@ -84,7 +89,7 @@ export function EventList({
               className={`event-row${high ? ' event-row-high' : ''}${selected ? ' event-row-selected' : ''}`}
               style={{
                 transform: `translateY(${item.start}px)`,
-                height: ROW_HEIGHT,
+                height: rowHeight,
                 ['--source-color' as string]: sourceColor(sourcePosition.get(event.source) ?? 0),
               }}
               onClick={() => onSelect(event)}

@@ -11,6 +11,8 @@ interface Props {
   selected: { from: number | undefined; to: number | undefined };
   tz: TimeZoneMode;
   onSelect: (from: number, to: number) => void;
+  /** スマートフォンの画面幅(目盛りを間引く) */
+  compact: boolean;
 }
 
 const HOUR = 3_600_000;
@@ -30,7 +32,7 @@ export function bucketRange(
 }
 
 /** 時間帯ごとの件数(情報源ごとの積み上げ)。ドラッグで期間を選ぶ(基本設計 F-02) */
-export function HistogramChart({ histogram, selected, tz, onSelect }: Props) {
+export function HistogramChart({ histogram, selected, tz, onSelect, compact }: Props) {
   const { t } = useT();
   const [drag, setDrag] = useState<{ anchor: number; current: number }>();
   const bucketCount = histogram.counts.length;
@@ -49,7 +51,8 @@ export function HistogramChart({ histogram, selected, tz, onSelect }: Props) {
     highlight = [selected.from ?? histogram.start, selected.to ?? end];
 
   const toX = (ms: number) => ((ms - histogram.start) / histogram.bucketMs).toFixed(3);
-  const tickStep = span > 36 * HOUR ? 12 * HOUR : span > 12 * HOUR ? 3 * HOUR : HOUR;
+  const baseStep = span > 36 * HOUR ? 12 * HOUR : span > 12 * HOUR ? 3 * HOUR : HOUR;
+  const tickStep = compact ? baseStep * 2 : baseStep;
 
   return (
     <div className="histogram">

@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { AnswerPanel } from '../guide/AnswerPanel';
 import { HowToStart, Hints } from '../guide/Guide';
 import { useT } from '../i18n';
+import { useCompactLayout } from '../media';
 import type { NavigateOptions } from '../navigation';
 import { EventDetail } from '../timeline/EventDetail';
 import { EventList } from '../timeline/EventList';
@@ -23,6 +24,7 @@ interface Props {
 /** データセットのタイムライン画面(基本設計 F-02〜F-05) */
 export function DatasetPage({ summary, dataset, state, onChange }: Props) {
   const { lang, t } = useT();
+  const compact = useCompactLayout();
   const tz = state.tz ?? (lang === 'en' ? 'utc' : 'jst');
   const { events } = dataset;
 
@@ -69,6 +71,21 @@ export function DatasetPage({ summary, dataset, state, onChange }: Props) {
     onChange({ ...base, event: eventId });
   };
 
+  const activeFilters =
+    state.sources.length +
+    state.types.length +
+    state.severities.length +
+    (from !== undefined || to !== undefined ? 1 : 0);
+  const filterBar = (
+    <FilterBar
+      state={state}
+      sources={dataset.sources}
+      types={prepared.types}
+      tz={tz}
+      onChange={(next) => onChange(next)}
+    />
+  );
+
   let emptyMessage = t('timeline.noEvents');
   if (idKind && idValue)
     emptyMessage = t('timeline.noEventsForId', { kind: t(`id.${idKind}`), value: idValue });
@@ -94,13 +111,17 @@ export function DatasetPage({ summary, dataset, state, onChange }: Props) {
         />
         <SearchBar state={state} onChange={onChange} />
         <IdFilterBanner state={state} onChange={onChange} />
-        <FilterBar
-          state={state}
-          sources={dataset.sources}
-          types={prepared.types}
-          tz={tz}
-          onChange={(next) => onChange(next)}
-        />
+        {compact ? (
+          <details className="filters-collapsible">
+            <summary>
+              {t('filter.toggle')}
+              {activeFilters > 0 && ` (${activeFilters})`}
+            </summary>
+            {filterBar}
+          </details>
+        ) : (
+          filterBar
+        )}
         <HistogramChart
           histogram={histogram}
           selected={{
@@ -108,6 +129,7 @@ export function DatasetPage({ summary, dataset, state, onChange }: Props) {
             to: to ? Date.parse(to) : undefined,
           }}
           tz={tz}
+          compact={compact}
           onSelect={(start, end) =>
             onChange({
               ...state,
@@ -117,6 +139,9 @@ export function DatasetPage({ summary, dataset, state, onChange }: Props) {
           }
         />
         <EventList
+          // 行の高さが変わるので、画面幅の切り替えで作り直す
+          key={compact ? 'compact' : 'wide'}
+          compact={compact}
           events={events}
           times={prepared.times}
           indexes={indexes}
@@ -134,6 +159,7 @@ export function DatasetPage({ summary, dataset, state, onChange }: Props) {
           source={dataset.sources.find((s) => s.name === selected.source)}
           onSelectId={(kind, value) => onChange({ ...state, idKind: kind, idValue: value })}
           onClose={() => onChange({ ...state, event: undefined })}
+          fullScreen={compact}
         />
       )}
     </main>
