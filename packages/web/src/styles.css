@@ -715,3 +715,130 @@ button {
   font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
   font-size: 0.8rem;
 }
+
+/* ---- スマートフォンの画面幅(media.ts の COMPACT_QUERY と同じ値) ---- */
+
+.filters-collapsible > summary {
+  display: inline-block;
+  padding: 1px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filters-collapsible[open] > summary {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 640px) {
+  .header-bar {
+    padding: 6px 12px;
+  }
+
+  .header-title {
+    font-size: 0.95rem;
+  }
+
+  .synthetic-notice {
+    padding: 3px 12px;
+    font-size: 0.75rem;
+  }
+
+  .top {
+    padding: 12px;
+  }
+
+  .dataset {
+    padding: 6px 8px 0;
+  }
+
+  /* 案内・検索などで縦が埋まっても一覧の高さを保てるよう、上の部分ごとスクロールさせる */
+  .dataset-main {
+    gap: 6px;
+    overflow-y: auto;
+  }
+
+  .event-list,
+  .event-list-empty {
+    flex: 1 0 60dvh;
+  }
+
+  .search-bar {
+    font-size: 0.85rem;
+  }
+
+  .keyword-input,
+  .id-search {
+    flex: 1 1 100%;
+  }
+
+  .id-search input {
+    flex: 1;
+    width: auto;
+  }
+
+  .type-picker-list {
+    max-width: calc(100vw - 32px);
+    white-space: normal;
+  }
+
+  .histogram svg {
+    height: 44px;
+  }
+
+  .histogram-hint {
+    display: none;
+  }
+
+  .answer-body {
+    max-height: 50vh;
+  }
+
+  /* 一覧は2行のカード: 1行目に時刻・情報源・重要度、2行目にメッセージ */
+  .event-list-compact .event-row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'time source severity'
+      'message message message';
+    align-content: center;
+    gap: 2px 8px;
+  }
+
+  .event-list-compact .event-time {
+    grid-area: time;
+  }
+
+  .event-list-compact .event-source {
+    grid-area: source;
+    font-size: 0.8rem;
+  }
+
+  .event-list-compact .event-severity {
+    grid-area: severity;
+  }
+
+  .event-list-compact .event-type {
+    display: none;
+  }
+
+  .event-list-compact .event-message {
+    grid-area: message;
+  }
+
+  /* 詳細はサイドパネルではなく全画面で開く */
+  .event-detail-fullscreen {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    border: 0;
+    border-radius: 0;
+    padding: 12px 16px 24px;
+  }
+
+  .event-detail-fullscreen .close-button {
+    font-size: 1.8rem;
+    padding: 0 4px;
+  }
+}

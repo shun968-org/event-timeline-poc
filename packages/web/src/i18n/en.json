@@ -63,5 +63,6 @@
   "answer.show": "Show the answer",
   "answer.hide": "Hide the answer",
   "answer.rootCause": "Root cause",
-  "answer.sequence": "From cause to impact (click to jump to the event)"
+  "answer.sequence": "From cause to impact (click to jump to the event)",
+  "filter.toggle": "Filters"
 }
