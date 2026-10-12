@@ -1,5 +1,7 @@
 import type { DatasetFile, DatasetSummary } from '@event-timeline/core';
 import { useMemo } from 'react';
+import { AnswerPanel } from '../guide/AnswerPanel';
+import { HowToStart, Hints } from '../guide/Guide';
 import { useT } from '../i18n';
 import type { NavigateOptions } from '../navigation';
 import { EventDetail } from '../timeline/EventDetail';
@@ -9,7 +11,7 @@ import { FilterBar } from '../timeline/FilterBar';
 import { buildHistogram } from '../timeline/histogram';
 import { HistogramChart } from '../timeline/HistogramChart';
 import { IdFilterBanner, SearchBar } from '../timeline/SearchBar';
-import type { ViewState } from '../view-state';
+import { EMPTY_VIEW_STATE, type ViewState } from '../view-state';
 
 interface Props {
   summary: DatasetSummary;
@@ -31,6 +33,7 @@ export function DatasetPage({ summary, dataset, state, onChange }: Props) {
       ...prepareEvents(events),
       sourcePosition,
       sourceIndex: events.map((e) => sourcePosition.get(e.source) ?? -1),
+      eventById: new Map(events.map((e) => [e.id, e])),
       types: countTypes(events),
       from: Date.parse(summary.from),
       to: Date.parse(summary.to),
@@ -55,7 +58,16 @@ export function DatasetPage({ summary, dataset, state, onChange }: Props) {
   }, [prepared, dataset.sources.length, from, to, sources, types, severities, q, idKind, idValue]);
 
   const labels = new Map(dataset.sources.map((s) => [s.name, s.label[lang]]));
-  const selected = state.event ? events.find((e) => e.id === state.event) : undefined;
+  const selected = state.event ? prepared.eventById.get(state.event) : undefined;
+
+  // 答え合わせから移るとき、今の絞り込みでそのイベントが隠れていれば、絞り込みを外す
+  const jumpTo = (eventId: string) => {
+    const visible = indexes.some((i) => events[i]?.id === eventId);
+    const base = visible
+      ? state
+      : { ...EMPTY_VIEW_STATE, dataset: state.dataset, lang: state.lang, tz: state.tz };
+    onChange({ ...base, event: eventId });
+  };
 
   let emptyMessage = t('timeline.noEvents');
   if (idKind && idValue)
@@ -71,6 +83,15 @@ export function DatasetPage({ summary, dataset, state, onChange }: Props) {
             {t('timeline.count', { shown: indexes.length, total: events.length })}
           </p>
         </div>
+        <HowToStart scenario={summary.scenario} />
+        <Hints />
+        <AnswerPanel
+          scenario={summary.scenario}
+          eventById={prepared.eventById}
+          sources={dataset.sources}
+          tz={tz}
+          onJump={jumpTo}
+        />
         <SearchBar state={state} onChange={onChange} />
         <IdFilterBanner state={state} onChange={onChange} />
         <FilterBar
