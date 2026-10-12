@@ -6,5 +6,5 @@ package-lock.json
 .devcontainer/
 .claude/
 **/dist/
-data/
-datasets/
+/datasets/
+/packages/web/public/data/

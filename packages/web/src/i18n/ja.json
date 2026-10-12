@@ -1,3 +1,18 @@
 {
-  "app.title": "イベントタイムライン PoC"
+  "app.title": "イベントタイムライン PoC",
+  "header.language": "表示言語",
+  "header.lang.ja": "日本語",
+  "header.lang.en": "English",
+  "header.syntheticNotice": "表示しているのは、すべて架空の合成データです(実在の会社・サービス・人物とは関係ありません)。",
+  "top.intro": "システムや業務の異なる情報源(アプリのログ・業務の処理履歴・監視・操作の記録)のイベントを1本の時間軸に並べ、何がどの順に起きたかを確かめる試作です。",
+  "top.howTo": "シナリオを選び、散らばったイベントから障害や問い合わせの原因を探してみてください。最後に答え合わせができます。",
+  "top.scenarios": "シナリオ",
+  "top.noScenarios": "シナリオがありません。",
+  "top.eventCount": "{count} 件",
+  "scenario.kind.incident": "障害",
+  "scenario.kind.inquiry": "問い合わせ",
+  "status.loading": "読み込み中…",
+  "error.load": "データを読み込めませんでした。時間をおいて開き直してください。",
+  "error.datasetNotFound": "データセット「{name}」が見つかりません。",
+  "error.backToTop": "シナリオの一覧に戻る"
 }

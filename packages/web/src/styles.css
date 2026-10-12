@@ -1,0 +1,191 @@
+:root {
+  color-scheme: light dark;
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --text: #1f2328;
+  --muted: #5f6670;
+  --border: #d9dcdf;
+  --accent: #2f6fdb;
+  --notice-bg: #fff4d6;
+  --notice-text: #6b4e00;
+  --error-bg: #fdecea;
+  --error-text: #a3261a;
+  --incident: #c43d2f;
+  --inquiry: #2f6fdb;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    'Hiragino Sans',
+    'Noto Sans JP',
+    sans-serif;
+  line-height: 1.6;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171a;
+    --surface: #1e2125;
+    --text: #e6e8ea;
+    --muted: #a0a7b0;
+    --border: #353a40;
+    --accent: #6ea0f5;
+    --notice-bg: #3a3014;
+    --notice-text: #f2d98a;
+    --error-bg: #3d1d1a;
+    --error-text: #f4a49a;
+    --incident: #f07b6e;
+    --inquiry: #6ea0f5;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a {
+  color: var(--accent);
+}
+
+button {
+  font: inherit;
+}
+
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+}
+
+.header-title {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.lang-switch {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.lang-switch button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 2px 10px;
+  cursor: pointer;
+}
+
+.lang-switch button[aria-pressed='true'] {
+  background: var(--accent);
+  color: #fff;
+}
+
+.synthetic-notice {
+  margin: 0;
+  padding: 4px 16px;
+  background: var(--notice-bg);
+  color: var(--notice-text);
+  font-size: 0.85rem;
+}
+
+.top {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.intro p {
+  margin: 0 0 8px;
+}
+
+.scenario-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 12px;
+}
+
+.scenario-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.scenario-card:hover,
+.scenario-card:focus-visible {
+  border-color: var(--accent);
+}
+
+.scenario-summary {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.scenario-meta {
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.badge {
+  align-self: flex-start;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.badge-incident {
+  background: var(--incident);
+}
+
+.badge-inquiry {
+  background: var(--inquiry);
+}
+
+.message,
+.dataset {
+  padding: 16px;
+}
+
+.error-banner {
+  padding: 8px 12px;
+  background: var(--error-bg);
+  color: var(--error-text);
+  border-radius: 6px;
+}
+
+.error-banner p {
+  margin: 0;
+}
+
+.error-banner pre {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+  font-size: 0.8rem;
+}

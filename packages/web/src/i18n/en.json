@@ -1,3 +1,18 @@
 {
-  "app.title": "Event Timeline PoC"
+  "app.title": "Event Timeline PoC",
+  "header.language": "Language",
+  "header.lang.ja": "日本語",
+  "header.lang.en": "English",
+  "header.syntheticNotice": "All data shown here is fictional and synthetic (not related to any real company, service, or person).",
+  "top.intro": "A prototype that lines up events from different sources—application logs, business transactions, monitoring, and audit logs—on a single timeline to see what happened, and in what order.",
+  "top.howTo": "Pick a scenario and track down the cause of an incident or a customer inquiry from scattered events. You can check your answer at the end.",
+  "top.scenarios": "Scenarios",
+  "top.noScenarios": "No scenarios available.",
+  "top.eventCount": "{count} events",
+  "scenario.kind.incident": "Incident",
+  "scenario.kind.inquiry": "Inquiry",
+  "status.loading": "Loading…",
+  "error.load": "Failed to load the data. Please try again later.",
+  "error.datasetNotFound": "Dataset \"{name}\" was not found.",
+  "error.backToTop": "Back to the scenario list"
 }
