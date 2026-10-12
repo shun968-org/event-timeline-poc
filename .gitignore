@@ -19,5 +19,6 @@ node_modules/
 
 # Build / generated
 dist/
-data/
-datasets/
+# 合成データ(npm run generate)と取り込み結果(npm run ingest)
+/datasets/
+/packages/web/public/data/

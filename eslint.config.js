@@ -5,7 +5,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/dist/', 'data/', 'datasets/'] },
+  { ignores: ['**/dist/', 'datasets/', 'packages/web/public/data/'] },
   js.configs.recommended,
   tseslint.configs.strict,
   {
