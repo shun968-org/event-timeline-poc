@@ -1,0 +1,15 @@
+# インフラ・監視イベント: JSON Lines、時刻は UNIX 時刻(ミリ秒)。関連 ID は持たない
+name: infra
+label: { ja: インフラ・監視イベント, en: Infrastructure & monitoring }
+file: "infra*.jsonl"
+format: jsonl
+time:
+  field: ts
+  format: epoch_ms
+fields:
+  type: kind
+  message: summary
+  severity:
+    field: severity
+    map: { warning: warn }   # info / error / critical は共通の語彙と同じ
+    default: info

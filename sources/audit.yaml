@@ -1,0 +1,18 @@
+# 操作・監査ログ: CSV、時刻は ISO 8601・+09:00 付き。注文 ID の列名は業務処理履歴と違う(orderId)
+name: audit
+label: { ja: 操作・監査ログ, en: Operation & audit log }
+file: "audit*.csv"
+format: csv
+time:
+  field: occurred_at
+  format: iso8601
+fields:
+  type: action
+  message: note
+  severity:
+    field: result
+    map: { success: info, failure: error }
+    default: info
+ids:
+  user: [target_user]
+  order: [orderId]
