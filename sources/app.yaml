@@ -1,0 +1,18 @@
+# アプリケーションログ: JSON Lines、時刻は ISO 8601・UTC
+name: app
+label: { ja: アプリケーションログ, en: Application log }
+file: "app*.jsonl"
+format: jsonl
+time:
+  field: timestamp
+  format: iso8601
+fields:
+  type: event
+  message: msg
+  severity:
+    field: level
+    map: { DEBUG: debug, INFO: info, WARN: warn, ERROR: error, FATAL: critical }
+    default: info
+ids:
+  trace: [trace_id]
+  user: [user_id]

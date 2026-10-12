@@ -1,0 +1,19 @@
+# 業務処理履歴: CSV、時刻はタイムゾーン無しの日本時間
+name: business
+label: { ja: 業務処理履歴, en: Business records }
+file: "business*.csv"
+format: csv
+time:
+  field: processed_at
+  format: "yyyy/MM/dd HH:mm:ss"
+  timezone: Asia/Tokyo
+fields:
+  type: event_type
+  message: detail
+  severity:
+    field: status
+    map: { OK: info, RETRY: warn, NG: error }
+    default: info
+ids:
+  order: [order_id]
+  user: [customer_id]
