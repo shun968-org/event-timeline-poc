@@ -1,0 +1,12 @@
+{
+  "name": "@event-timeline/ingest",
+  "description": "情報源のファイルを共通イベント形式の静的 JSON に変換する取り込み CLI",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p ."
+  }
+}

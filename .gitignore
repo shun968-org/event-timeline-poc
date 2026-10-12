@@ -16,3 +16,8 @@
 
 # Node
 node_modules/
+
+# Build / generated
+dist/
+data/
+datasets/

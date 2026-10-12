@@ -1,0 +1,10 @@
+# 書式を揃えるのは TypeScript のコードと設定だけにする(ドキュメント・YAML は手で整える)
+*.md
+*.yml
+*.yaml
+package-lock.json
+.devcontainer/
+.claude/
+**/dist/
+data/
+datasets/
