@@ -25,7 +25,7 @@
 
 - 感想: [General](https://github.com/shun968-org/event-timeline-poc/discussions/categories/general)
 - 改善要望: [Ideas](https://github.com/shun968-org/event-timeline-poc/discussions/categories/ideas)
-- 本番でも使いたいか: [Polls](https://github.com/shun968-org/event-timeline-poc/discussions/categories/polls)
+- 本番でも使いたいか: [投票](https://github.com/shun968-org/event-timeline-poc/discussions/36)
 
 ## ローカルで動かす
 
