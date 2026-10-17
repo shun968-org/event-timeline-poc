@@ -69,5 +69,13 @@
   "feedback.lead": "使ってみた感想や要望を、GitHub Discussions で聞かせてください(GitHub のアカウントが要ります)。",
   "feedback.general": "感想を送る",
   "feedback.ideas": "改善の要望を送る",
-  "feedback.polls": "「本番でも使いたいか」に投票する"
+  "feedback.polls": "「本番でも使いたいか」に投票する",
+  "perf.title": "処理時間(ミリ秒)",
+  "perf.empty": "まだ計測していません",
+  "perf.fetch": "データの取得",
+  "perf.validate": "データの検証",
+  "perf.index": "索引の作成",
+  "perf.filter": "絞り込みの計算",
+  "perf.open": "開いてから表示まで",
+  "perf.update": "条件の変更から表示まで"
 }

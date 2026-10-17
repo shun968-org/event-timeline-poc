@@ -3,10 +3,12 @@ import { Suspense, use, useEffect } from 'react';
 import { DatasetPage } from './components/DatasetPage';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Header } from './components/Header';
+import { PerfPanel } from './components/PerfPanel';
 import { TopPage } from './components/TopPage';
 import { useDataSource } from './data/context';
 import { LangContext, resolveLang, useT } from './i18n';
 import { useViewState, type NavigateOptions } from './navigation';
+import { isPerfPanelEnabled } from './perf';
 import { loadSetting, saveSetting } from './storage';
 import { EMPTY_VIEW_STATE, type ViewState } from './view-state';
 
@@ -41,6 +43,7 @@ export function App() {
           )}
         </Suspense>
       </ErrorBoundary>
+      {isPerfPanelEnabled() && <PerfPanel />}
     </LangContext>
   );
 }

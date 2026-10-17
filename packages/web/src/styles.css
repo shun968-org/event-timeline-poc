@@ -875,3 +875,39 @@ button {
     padding: 0 4px;
   }
 }
+
+/* 処理時間の表示(#perf のときだけ) */
+.perf-panel {
+  position: fixed;
+  right: 8px;
+  bottom: 8px;
+  z-index: 100;
+  max-width: 260px;
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 20%);
+  font-size: 12px;
+}
+
+.perf-panel h2 {
+  margin: 0 0 4px;
+  font-size: 12px;
+}
+
+.perf-panel p,
+.perf-panel dl {
+  margin: 0;
+}
+
+.perf-panel dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.perf-panel dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}

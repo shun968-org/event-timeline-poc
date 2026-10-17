@@ -18,6 +18,7 @@
 - 画面の文言は `packages/web/src/i18n/ja.json`・`en.json` に同じキーで足す(片方だけだとテストが失敗する)
 - 画面の条件はすべて URL のクエリ文字列に持つ(`packages/web/src/view-state.ts`)。データは `DataSource` 経由で読む。
   画面の操作のテストは先頭に `// @vitest-environment jsdom` を書き、描画と操作を `await act(async () => …)` で包む(Suspense の読み込みを待つため)
+- 処理時間は `packages/web/src/perf.ts` で常に測り、URL の末尾に `#perf` を付けて開いたときだけ画面の隅に出す(性能の検証用)
 
 ## 開発規約
 
