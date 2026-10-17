@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { startInteraction } from './perf';
 import { parseViewState, serializeViewState, type ViewState } from './view-state';
 
 const NAVIGATE_EVENT = 'event-timeline:navigate';
@@ -26,6 +27,7 @@ export function useViewState() {
   );
   const state = useMemo(() => parseViewState(search), [search]);
   const navigate = useCallback((next: ViewState, options: NavigateOptions = {}) => {
+    startInteraction();
     const url = `${window.location.pathname}${serializeViewState(next)}${window.location.hash}`;
     if (options.replace) window.history.replaceState(null, '', url);
     else window.history.pushState(null, '', url);

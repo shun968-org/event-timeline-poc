@@ -69,5 +69,13 @@
   "feedback.lead": "Tell us what you think on GitHub Discussions (a GitHub account is required).",
   "feedback.general": "Share feedback",
   "feedback.ideas": "Suggest an improvement",
-  "feedback.polls": "Vote: would you use this in production?"
+  "feedback.polls": "Vote: would you use this in production?",
+  "perf.title": "Timings (ms)",
+  "perf.empty": "No measurements yet",
+  "perf.fetch": "Fetch data",
+  "perf.validate": "Validate data",
+  "perf.index": "Build index",
+  "perf.filter": "Filter",
+  "perf.open": "Open to render",
+  "perf.update": "Change to render"
 }

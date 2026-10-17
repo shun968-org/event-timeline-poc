@@ -5,6 +5,7 @@ import {
   type IndexFile,
 } from '@event-timeline/core';
 import { z } from 'zod';
+import { measure, recordMeasurement } from '../perf';
 
 /**
  * 画面のデータの読み方。PoC では静的 JSON を読むが、PoC 後に API を足す場合は
@@ -27,6 +28,7 @@ export function createStaticDataSource(
   async function load<T>(file: string, schema: z.ZodType<T>): Promise<T> {
     const url = `${baseUrl}${file}`;
     let body: unknown;
+    const start = performance.now();
     try {
       const response = await fetchFn(url);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -34,7 +36,8 @@ export function createStaticDataSource(
     } catch (error) {
       throw new DataLoadError(`${url} を読み込めません: ${String(error)}`, { cause: error });
     }
-    const result = schema.safeParse(body);
+    recordMeasurement('fetch', performance.now() - start);
+    const result = measure('validate', () => schema.safeParse(body));
     if (!result.success) {
       throw new DataLoadError(`${url} の形式が正しくありません:\n${z.prettifyError(result.error)}`);
     }
