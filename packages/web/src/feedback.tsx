@@ -2,11 +2,11 @@ import { useT } from './i18n';
 
 const DISCUSSIONS_URL = 'https://github.com/shun968-org/event-timeline-poc/discussions';
 
-/** 感想・要望の受け口(GitHub Discussions のカテゴリ)。画面には書き込み機能を持たない(基本設計 F-12) */
+/** 感想・要望の受け口(GitHub Discussions のカテゴリと投票)。画面には書き込み機能を持たない(基本設計 F-12) */
 export const FEEDBACK_URLS = {
   general: `${DISCUSSIONS_URL}/categories/general`,
   ideas: `${DISCUSSIONS_URL}/categories/ideas`,
-  polls: `${DISCUSSIONS_URL}/categories/polls`,
+  polls: `${DISCUSSIONS_URL}/36`,
 } as const;
 
 type FeedbackKind = keyof typeof FEEDBACK_URLS;
