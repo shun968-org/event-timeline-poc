@@ -28,7 +28,7 @@ jobs:
       GH_REPO: ${{ github.repository }}
       NUMBER: ${{ github.event.issue.number }}
       BODY: ${{ github.event.issue.body }}
-      ASSOCIATION: ${{ github.event.issue.author_association }}
+      AUTHOR: ${{ github.event.issue.user.login }}
     steps:
       # タスクのテンプレートの「種類」の選択を type ラベルにする
       - name: 種類のラベル
@@ -38,11 +38,14 @@ jobs:
             feature|fix|docs|chore|refactor|test) gh issue edit "$NUMBER" --add-label "type:$type" ;;
           esac
 
-      # 開発メンバー以外(公開デモの利用者)からの Issue を見分ける
+      # 開発メンバー以外(公開デモの利用者)からの Issue を見分ける。
+      # author_association は Organization のメンバーシップが非公開だと MEMBER にならないので、
+      # リポジトリへの書き込み権限で判定する(公開リポジトリでは誰でも read になる)
       - name: 出どころのラベル
         if: github.event.action == 'opened'
         run: |
-          case "$ASSOCIATION" in
-            OWNER|MEMBER|COLLABORATOR) ;;
+          permission="$(gh api "repos/$GH_REPO/collaborators/$AUTHOR/permission" --jq '.permission')"
+          case "$permission" in
+            admin|maintain|write) ;;
             *) gh issue edit "$NUMBER" --add-label "from:feedback" ;;
           esac
